@@ -6,6 +6,18 @@ msg_scope=""
 msg_body=""
 msg_breaking=""
 
+usage() {
+  echo 1>&2 "usage: git cc --subject <subject>"
+  echo 1>&2 "   or: git cc --subject <subject> [<options>]"
+  echo 1>&2 ""
+  echo 1>&2 "    --subject <subject>    subject is a short summary of the code changes"
+  echo 1>&2 "    --type <type>          prefix subject with a type, which consists of a noun, feat, fix, etc"
+  echo 1>&2 "    --scope <scope>        a noun describing a section of the codebase"
+  echo 1>&2 "    --body <body>          additional contextual information about the code changes"
+  echo 1>&2 "    --breaking <breaking>  introduces a breaking API change"
+  echo 1>&2 ""
+}
+
 while [ "${#}" -ge 1 ]; do
   case "$1" in
     --type)
@@ -18,11 +30,19 @@ while [ "${#}" -ge 1 ]; do
       msg_body="$2";;
     --breaking)
       msg_breaking="$2";;
+    --help|-h)
+      usage && break;;
+    --*)
+      echo 1>&2 "error: unknown option \`$1'" && usage && exit 1;;
+    -*)
+      echo 1>&2 "error: unknown switch \`$1'" && usage && exit 1;;
+    *)
+      usage && exit 1;;
   esac && shift
 done
 
 # check if subject provided
-[[ -z "${msg_subject}" ]] && echo 1>&2 "error: subject must be provided" && exit 1
+[[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && exit 1
 
 msg="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
 msg="${msg}$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
