@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
+# set -x
+
 msg_type="chore"
 msg_subject=""
 msg_scope=""
 msg_body=""
 msg_breaking=""
+
+dry_run=false
 
 usage() {
   echo 1>&2 "usage: git cc --subject <subject>"
@@ -16,36 +20,49 @@ usage() {
   echo 1>&2 "    --body <body>          additional contextual information about the code changes"
   echo 1>&2 "    --breaking <breaking>  introduces a breaking API change"
   echo 1>&2 ""
+  echo 1>&2 "    --dry-run              show what would have been committed"
+  echo 1>&2 ""
 }
 
 while [ "${#}" -ge 1 ]; do
   case "$1" in
-    --type)
-      msg_type="$2";;
-    --subject)
-      msg_subject="$2";;
-    --scope)
-      msg_scope="$2";;
-    --body)
-      msg_body="$2";;
-    --breaking)
-      msg_breaking="$2";;
-    --help|-h)
-      usage && break;;
-    --*)
-      echo 1>&2 "error: unknown option \`$1'" && usage && exit 1;;
-    -*)
-      echo 1>&2 "error: unknown switch \`$1'" && usage && exit 1;;
-    *)
-      usage && exit 1;;
+  --type)
+    msg_type="$2"
+    ;;
+  --subject)
+    msg_subject="$2"
+    ;;
+  --scope)
+    msg_scope="$2"
+    ;;
+  --body)
+    msg_body="$2"
+    ;;
+  --breaking)
+    msg_breaking="$2"
+    ;;
+  --dry-run)
+    dry_run=true
+    ;;
+  --help | -h | help)
+    usage && exit 0
+    ;;
+  --*)
+    echo 1>&2 "error: unknown option \`$1'" && usage && exit 1
+    ;;
+  -*)
+    echo 1>&2 "error: unknown switch \`$1'" && usage && exit 1
+    ;;
   esac && shift
 done
 
 # check if subject provided
 [[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && exit 1
 
-msg="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
-msg="${msg}$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
-msg="${msg}$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")"
+if $dry_run; then
+  msg="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
+  msg="${msg}$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
+  msg="${msg}$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")"
 
-echo "${msg}"
+  echo "${msg}"
+fi
