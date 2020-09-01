@@ -65,4 +65,9 @@ if $dry_run; then
   msg="${msg}$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")"
 
   echo "${msg}"
+else
+  git commit \
+    -m "${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}" \
+    -m "$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")" \
+    -m "$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")"
 fi
