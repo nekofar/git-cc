@@ -57,7 +57,7 @@ while [ "${#}" -ge 1 ]; do
 done
 
 # check if subject provided
-[[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && exit 1
+[[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
 
 if $dry_run; then
   msg="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
