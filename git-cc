@@ -27,7 +27,8 @@ usage() {
 }
 
 concat() {
-  # put everything together
+  local subject message footers=()
+
   subject="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
   message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
   footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
