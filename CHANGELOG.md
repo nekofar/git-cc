@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://gitlab.com/nekofar/git-conventional-commit/compare/v1.0.0...v1.1.0) (2020-09-02)
+
+
+### Features
+
+* add basic interactive prompt ([0fc4b02](https://gitlab.com/nekofar/git-conventional-commit/commit/0fc4b0273fe51b4d32c4a251a652b490012e4fed))
+
+
+### Bug Fixes
+
+* **prompt:** solve empty type value issue ([a368592](https://gitlab.com/nekofar/git-conventional-commit/commit/a368592fc8a44db8ee7edb6218c48b4277d3b8d0))
+
 ## 1.0.0 (2020-09-01)
 
 
