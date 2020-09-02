@@ -4,6 +4,7 @@ before_script:
   - echo "Install shUnit2"
   - apt update -y
   - apt install -y shunit2
+  - ln -s -f $(which shunit2) /usr/local/bin/shunit2
 
 test:
   stage: test
