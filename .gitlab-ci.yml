@@ -1,0 +1,12 @@
+image: ubuntu:latest
+
+before_script:
+  - echo "Install shUnit2"
+  - sudo apt update -y
+  - sudo apt install -y shunit2
+
+test:
+  stage: test
+  script:
+    - echo "Perform tests"
+    - bash git-cc-test
