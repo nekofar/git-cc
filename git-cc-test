@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+test_minus_h() {
+  first_line=$(. ./git-cc -h 2>&1 | head -1)
+  assertEquals "usage: git cc --subject <subject>" "${first_line}"
+}
+
+test_missing_subject() {
+  first_line=$(. ./git-cc 2>&1 | head -1)
+  assertEquals "fatal: subject must be provided" "${first_line}"
+}
+
+. /usr/local/bin/shunit2
