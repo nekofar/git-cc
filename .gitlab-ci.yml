@@ -2,8 +2,8 @@ image: ubuntu:latest
 
 before_script:
   - echo "Install shUnit2"
-  - sudo apt update -y
-  - sudo apt install -y shunit2
+  - apt update -y
+  - apt install -y shunit2
 
 test:
   stage: test
