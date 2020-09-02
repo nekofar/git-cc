@@ -27,12 +27,21 @@ usage() {
 }
 
 concat() {
-  # put everything together
+  local subject message footers=()
+
   subject="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
   message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
   footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
 
-  echo "${subject}${message}${footers[*]}";
+  echo "${subject}${message}${footers[*]}"
+}
+
+prompt() {
+  read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
+  read -r -p 'What is the scope that this changes affect? ' msg_scope
+  read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
+  read -r -p 'Provide a longer description of the change: ' msg_body
+  read -r -p 'Any breaking changes? List those changes: ' msg_breaking
 }
 
 while [ "${#}" -ge 1 ]; do
@@ -54,6 +63,9 @@ while [ "${#}" -ge 1 ]; do
     ;;
   --dry-run)
     dry_run=true
+    ;;
+  --interactive)
+    prompt
     ;;
   --help | -h | help)
     usage && exit 0
