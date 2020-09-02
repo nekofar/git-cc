@@ -32,7 +32,15 @@ concat() {
   message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
   footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
 
-  echo "${subject}${message}${footers[*]}";
+  echo "${subject}${message}${footers[*]}"
+}
+
+prompt() {
+  read -r -p 'type? ' msg_type
+  read -r -p 'subject? ' msg_subject
+  read -r -p 'scope? ' msg_scope
+  read -r -p 'body? ' msg_body
+  read -r -p 'breaking? ' msg_breaking
 }
 
 while [ "${#}" -ge 1 ]; do
@@ -54,6 +62,9 @@ while [ "${#}" -ge 1 ]; do
     ;;
   --dry-run)
     dry_run=true
+    ;;
+  --interactive)
+    prompt
     ;;
   --help | -h | help)
     usage && exit 0
