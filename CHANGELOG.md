@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://gitlab.com/nekofar/git-conventional-commit/compare/v1.1.0...v1.1.1) (2020-09-02)
+
+
+### Bug Fixes
+
+* solve unbound variable errors ([a172ee7](https://gitlab.com/nekofar/git-conventional-commit/commit/a172ee7ab2adac34003876450da2d46454f55604))
+
 ## [1.1.0](https://gitlab.com/nekofar/git-conventional-commit/compare/v1.0.0...v1.1.0) (2020-09-02)
 
 
