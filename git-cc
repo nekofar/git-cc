@@ -37,11 +37,11 @@ concat() {
 }
 
 prompt() {
-  read -r -p 'type? ' msg_type
-  read -r -p 'subject? ' msg_subject
-  read -r -p 'scope? ' msg_scope
-  read -r -p 'body? ' msg_body
-  read -r -p 'breaking? ' msg_breaking
+  read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
+  read -r -p 'What is the scope that this changes affect? ' msg_scope
+  read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
+  read -r -p 'Provide a longer description of the change: ' msg_body
+  read -r -p 'Any breaking changes? List those changes: ' msg_breaking
 }
 
 while [ "${#}" -ge 1 ]; do
