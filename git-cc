@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
-# set -x
-
-msg_type="chore"
-msg_subject=""
-msg_scope=""
-msg_body=""
-msg_breaking=""
-
-dry_run=false
+# enable strict mode
+set -euo pipefail
+IFS=$'\n\t'
 
 usage() {
   echo 1>&2 "usage: git cc --subject <subject>"
@@ -22,6 +16,24 @@ usage() {
   echo 1>&2 ""
   echo 1>&2 "    --dry-run              show what would have been committed"
   echo 1>&2 ""
+}
+
+concat() {
+  local subject message footers=()
+
+  subject="${msg_type:-chore}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
+  message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
+  footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
+
+  echo "${subject}${message}${footers[*]}"
+}
+
+prompt() {
+  read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
+  read -r -p 'What is the scope that this changes affect? ' msg_scope
+  read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
+  read -r -p 'Provide a longer description of the change: ' msg_body
+  read -r -p 'Any breaking changes? List those changes: ' msg_breaking
 }
 
 while [ "${#}" -ge 1 ]; do
@@ -44,6 +56,9 @@ while [ "${#}" -ge 1 ]; do
   --dry-run)
     dry_run=true
     ;;
+  --interactive)
+    prompt
+    ;;
   --help | -h | help)
     usage && exit 0
     ;;
@@ -59,15 +74,9 @@ done
 # check if subject provided
 [[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
 
-if $dry_run; then
-  msg="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
-  msg="${msg}$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
-  msg="${msg}$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")"
-
-  echo "${msg}"
+# print out commit on dry-run
+if ($dry_run); then
+  concat && exit 0
 else
-  git commit \
-    -m "${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}" \
-    -m "$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")" \
-    -m "$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")"
+  git commit -m "$(concat)"
 fi
