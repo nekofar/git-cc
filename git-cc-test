@@ -5,6 +5,16 @@ test_minus_h() {
   assertEquals "usage: git cc --subject <subject>" "${first_line}"
 }
 
+test_unknown_switch() {
+  first_line=$(. ./git-cc -t 2>&1 | head -1)
+  assertEquals "error: unknown switch \`-t'" "${first_line}"
+}
+
+test_unknown_option() {
+  first_line=$(. ./git-cc --test 2>&1 | head -1)
+  assertEquals "error: unknown option \`--test'" "${first_line}"
+}
+
 test_missing_subject() {
   first_line=$(. ./git-cc 2>&1 | head -1)
   assertEquals "fatal: subject must be provided" "${first_line}"
