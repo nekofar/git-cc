@@ -26,6 +26,15 @@ usage() {
   echo 1>&2 ""
 }
 
+concat() {
+  # put everything together
+  subject="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
+  message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
+  footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
+
+  echo "${subject}${message}${footers[*]}";
+}
+
 while [ "${#}" -ge 1 ]; do
   case "$1" in
   --type)
@@ -61,14 +70,9 @@ done
 # check if subject provided
 [[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
 
-# put everything together
-subject="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
-message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
-footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
-
 # print out commit on dry-run
 if ($dry_run); then
-  echo "${subject}${message}${footers[*]}"
+  concat && exit 0
 else
-  git commit -m "${subject}" -m "${message}" -m "${footers[*]}"
+  git commit -m "$(concat)"
 fi
