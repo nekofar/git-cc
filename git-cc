@@ -21,9 +21,9 @@ usage() {
 concat() {
   local subject message footers=()
 
-  subject="${msg_type:-chore}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
-  message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
-  footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
+  subject="${msg_type:-chore}$([[ -n "${msg_scope:-}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject:-}"
+  message="$([[ -n "${msg_body:-}" ]] && printf "\n\n%s" "${msg_body}")"
+  footers=("$([[ -n "${msg_breaking:-}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
 
   echo "${subject}${message}${footers[*]}"
 }
@@ -72,10 +72,10 @@ while [ "${#}" -ge 1 ]; do
 done
 
 # check if subject provided
-[[ -z "${msg_subject}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
+[[ -z "${msg_subject:-}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
 
 # print out commit on dry-run
-if ($dry_run); then
+if (${dry_run:-false}); then
   concat && exit 0
 else
   git commit -m "$(concat)"
