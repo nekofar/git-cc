@@ -4,14 +4,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-msg_type="chore"
-msg_subject=""
-msg_scope=""
-msg_body=""
-msg_breaking=""
-
-dry_run=false
-
 usage() {
   echo 1>&2 "usage: git cc --subject <subject>"
   echo 1>&2 "   or: git cc --subject <subject> [<options>]"
@@ -29,7 +21,7 @@ usage() {
 concat() {
   local subject message footers=()
 
-  subject="${msg_type}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
+  subject="${msg_type:-chore}$([[ -n "${msg_scope}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject}"
   message="$([[ -n "${msg_body}" ]] && printf "\n\n%s" "${msg_body}")"
   footers=("$([[ -n "${msg_breaking}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
 
