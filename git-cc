@@ -22,13 +22,28 @@ usage() {
 }
 
 concat() {
-  local subject message footers=()
+  local subject content=()
 
-  subject="${msg_type:-chore}$([[ -n "${msg_scope:-}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject:-}"
-  message="$([[ -n "${msg_body:-}" ]] && printf "\n\n%s" "${msg_body}")"
-  footers=("$([[ -n "${msg_breaking:-}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
+  if [[ -z "${msg_scope:-}" ]]; then
+    msg_type=$(printf '%s' "${msg_type:-chore}")
+  else
+    msg_type=$(printf "%s(%s)" "${msg_type:-chore}" "${msg_scope}")
+  fi
 
-  echo "${subject}${message}${footers[*]}"
+  if [[ -n "${msg_body:-}" ]]; then
+    msg_body=$(printf "\n\n%s" "${msg_body}")
+    content[${#content[@]}]=${msg_body}
+  fi
+
+  if [[ -n "${msg_breaking:-}" ]]; then
+    msg_type="${msg_type}!"
+    msg_breaking=$(printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")
+    content[${#content[@]}]=${msg_breaking}
+  fi
+
+  subject=$(printf "%s: %s" "${msg_type}" "${msg_subject}")
+
+  printf "%s%s" "${subject}" "${content[*]}"
 }
 
 prompt() {
