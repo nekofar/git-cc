@@ -3,7 +3,8 @@ image: ubuntu:latest
 before_script:
   - echo "Install dependencies"
   - apt update -y
-  - apt install -y shunit2 bashcov
+  - apt install -y shunit2 ruby-full
+  - gem install bashcov
   - ln -s -f $(which shunit2) /usr/local/bin/shunit2
 
 test:
