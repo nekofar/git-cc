@@ -1,13 +1,13 @@
 image: ubuntu:latest
 
 before_script:
-  - echo "Install shUnit2"
+  - echo "Install dependencies"
   - apt update -y
-  - apt install -y shunit2
+  - apt install -y shunit2 bashcov
   - ln -s -f $(which shunit2) /usr/local/bin/shunit2
 
 test:
   stage: test
   script:
-    - echo "Perform tests"
-    - bash git-cc-test
+    - echo "Perform tests and coverage"
+    - bashcov -s git-cc-test
