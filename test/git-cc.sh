@@ -6,58 +6,69 @@ oneTimeSetUp() {
 }
 
 testSwitchUnknown() {
-  first_line=$(git-cc -t 2>&1 | head -1)
-  ${_ASSERT_EQUALS_} "'error: unknown switch \`-t'" "'${first_line%?}'"
+  result=$(git-cc -t 2>&1 | head -1)
+  expect='error: unknown switch `-t'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result%?}'"
 }
 
 testOptionUnknown() {
-  first_line=$(git-cc --test 2>&1 | head -1)
-  ${_ASSERT_EQUALS_} "'error: unknown option \`--test'" "'${first_line%?}'"
+  result=$(git-cc --test 2>&1 | head -1)
+  expect='error: unknown option `--test'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result%?}'"
 }
 
 testMissingSubject() {
-  first_line=$(git-cc 2>&1 | head -1)
-  ${_ASSERT_EQUALS_} "'fatal: subject must be provided'" "'${first_line}'"
+  result=$(git-cc 2>&1 | head -1)
+  expect='fatal: subject must be provided'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testSwitchH() {
-  first_line=$(git-cc -h 2>&1 | head -1)
-  ${_ASSERT_EQUALS_} "'usage: git cc --subject <subject>'" "'${first_line}'"
+  result=$(git-cc -h 2>&1 | head -1)
+  expect='usage: git cc --subject <subject>'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionHelp() {
-  first_line=$(git-cc --help 2>&1 | head -1)
-  ${_ASSERT_EQUALS_} "'usage: git cc --subject <subject>'" "'${first_line}'"
+  result=$(git-cc --help 2>&1 | head -1)
+  expect='usage: git cc --subject <subject>'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionDryRun() {
-  commit_msg=$(git-cc --dry-run --subject 'some text')
-  ${_ASSERT_EQUALS_} "'chore: some text'" "'${commit_msg}'"
+  result=$(git-cc --dry-run --subject 'some text')
+  expect='chore: some text'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionType() {
-  commit_msg=$(git-cc --subject 'subject description' --type 'test' --dry-run)
-  ${_ASSERT_EQUALS_} "'test: subject description'" "'${commit_msg}'"
+  result=$(git-cc --subject 'subject description' --type 'test' --dry-run)
+  expect='test: subject description'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionScope() {
-  commit_msg=$(git-cc --subject 'subject description' --scope 'test' --dry-run)
-  ${_ASSERT_EQUALS_} "'chore(test): subject description'" "'${commit_msg}'"
+  result=$(git-cc --subject 'subject description' --scope 'test' --dry-run)
+  expect='chore(test): subject description'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionSubject() {
-  commit_msg=$(git-cc --subject 'some description' --dry-run)
-  ${_ASSERT_EQUALS_} "'chore: some description'" "'${commit_msg}'"
+  result=$(git-cc --subject 'some description' --dry-run)
+  expect='chore: some description'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionBody() {
-  commit_msg=$(git-cc --subject 'some description' --body 'long description' --dry-run | head -3 | tail -1)
-  ${_ASSERT_EQUALS_} "'long description'" "'${commit_msg}'"
+  result=$(git-cc --subject 'some description' --body 'long description' --dry-run | head -3 | tail -1)
+  expect='long description'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 testOptionBreaking() {
-  commit_msg=$(git-cc --subject 'some description' --breaking 'breaking description' --dry-run | head -3 | tail -1)
-  ${_ASSERT_EQUALS_} "'BREAKING CHANGE: breaking description'" "'${commit_msg}'"
+  result=$(git-cc --subject 'some description' --breaking 'breaking description' --dry-run | head -3 | tail -1)
+  expect='BREAKING CHANGE: breaking description'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
 . /usr/local/bin/shunit2
