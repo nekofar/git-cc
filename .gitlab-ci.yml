@@ -11,4 +11,4 @@ test:
   stage: test
   script:
     - echo "Perform tests and coverage"
-    - bashcov -s git-cc-test
+    - bashcov test/git-cc.sh --skip-uncovered
