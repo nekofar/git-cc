@@ -71,4 +71,10 @@ testOptionBreaking() {
   ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
 }
 
+testOptionInteractive() {
+  result=$(echo -e "test\nunit\nsome description\n\n\n" | git-cc --interactive --dry-run)
+  expect='test(unit): some description'
+  ${_ASSERT_EQUALS_} "'${expect}'" "'${result}'"
+}
+
 . /usr/local/bin/shunit2
