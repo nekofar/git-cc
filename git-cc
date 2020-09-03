@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
 
+#/ usage: git cc --subject <subject>
+#/    or: git cc --subject <subject> [<options>]
+#/
+#/     --subject <subject>    subject is a short summary of the code changes
+#/     --type <type>          prefix subject with a type, which consists of a noun, feat, fix, etc
+#/     --scope <scope>        a noun describing a section of the codebase
+#/     --body <body>          additional contextual information about the code changes
+#/     --breaking <breaking>  introduces a breaking API change"
+#/
+#/     --dry-run              show what would have been committed
+#/
+
 # enable strict mode
 set -euo pipefail
 IFS=$'\n\t'
 
 usage() {
-  echo 1>&2 "usage: git cc --subject <subject>"
-  echo 1>&2 "   or: git cc --subject <subject> [<options>]"
-  echo 1>&2 ""
-  echo 1>&2 "    --subject <subject>    subject is a short summary of the code changes"
-  echo 1>&2 "    --type <type>          prefix subject with a type, which consists of a noun, feat, fix, etc"
-  echo 1>&2 "    --scope <scope>        a noun describing a section of the codebase"
-  echo 1>&2 "    --body <body>          additional contextual information about the code changes"
-  echo 1>&2 "    --breaking <breaking>  introduces a breaking API change"
-  echo 1>&2 ""
-  echo 1>&2 "    --dry-run              show what would have been committed"
-  echo 1>&2 ""
+  grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- 1>&2
+  exit 0
 }
 
 concat() {
