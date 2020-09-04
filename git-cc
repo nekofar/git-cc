@@ -1,82 +1,107 @@
 #!/usr/bin/env bash
 
+#/ usage: git cc --subject <subject>
+#/    or: git cc --subject <subject> [<options>]
+#/
+#/     --subject <subject>    subject is a short summary of the code changes
+#/     --type <type>          prefix subject with a type, which consists of a noun, feat, fix, etc
+#/     --scope <scope>        a noun describing a section of the codebase
+#/     --body <body>          additional contextual information about the code changes
+#/     --breaking <breaking>  introduces a breaking API change"
+#/
+#/     --dry-run              show what would have been committed
+#/
+
 # enable strict mode
 set -euo pipefail
 IFS=$'\n\t'
 
 usage() {
-  echo 1>&2 "usage: git cc --subject <subject>"
-  echo 1>&2 "   or: git cc --subject <subject> [<options>]"
-  echo 1>&2 ""
-  echo 1>&2 "    --subject <subject>    subject is a short summary of the code changes"
-  echo 1>&2 "    --type <type>          prefix subject with a type, which consists of a noun, feat, fix, etc"
-  echo 1>&2 "    --scope <scope>        a noun describing a section of the codebase"
-  echo 1>&2 "    --body <body>          additional contextual information about the code changes"
-  echo 1>&2 "    --breaking <breaking>  introduces a breaking API change"
-  echo 1>&2 ""
-  echo 1>&2 "    --dry-run              show what would have been committed"
-  echo 1>&2 ""
+  grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- 1>&2
+  exit 0
 }
 
 concat() {
-  local subject message footers=()
+  local subject content=()
 
-  subject="${msg_type:-chore}$([[ -n "${msg_scope:-}" ]] && printf "(%s)" "${msg_scope}"): ${msg_subject:-}"
-  message="$([[ -n "${msg_body:-}" ]] && printf "\n\n%s" "${msg_body}")"
-  footers=("$([[ -n "${msg_breaking:-}" ]] && printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")")
+  if [[ -z "${msg_scope:-}" ]]; then
+    msg_type=$(printf '%s' "${msg_type:-chore}")
+  else
+    msg_type=$(printf "%s(%s)" "${msg_type:-chore}" "${msg_scope}")
+  fi
 
-  echo "${subject}${message}${footers[*]}"
+  if [[ -n "${msg_body:-}" ]]; then
+    msg_body=$(printf "\n\n%s" "${msg_body}")
+    content[${#content[@]}]=${msg_body}
+  fi
+
+  if [[ -n "${msg_breaking:-}" ]]; then
+    msg_type="${msg_type}!"
+    msg_breaking=$(printf "\n\nBREAKING CHANGE: %s" "${msg_breaking}")
+    content[${#content[@]}]=${msg_breaking}
+  fi
+
+  subject=$(printf "%s: %s" "${msg_type}" "${msg_subject}")
+
+  printf "%s%s" "${subject}" "${content[*]}"
 }
 
 prompt() {
-  read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
-  read -r -p 'What is the scope that this changes affect? ' msg_scope
-  read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
-  read -r -p 'Provide a longer description of the change: ' msg_body
-  read -r -p 'Any breaking changes? List those changes: ' msg_breaking
+  [[ -z "${msg_type:-}" ]] && read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
+  [[ -z "${msg_scope:-}" ]] && read -r -p 'What is the scope that this changes affect? ' msg_scope
+  [[ -z "${msg_subject:-}" ]] && read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
+  [[ -z "${msg_body:-}" ]] && read -r -p 'Provide a longer description of the change: ' msg_body
+  [[ -z "${msg_breaking:-}" ]] && read -r -p 'Any breaking changes? List those changes: ' msg_breaking
 }
 
-while [ "${#}" -ge 1 ]; do
-  case "$1" in
-  --type)
-    msg_type="$2"
-    ;;
-  --subject)
-    msg_subject="$2"
-    ;;
-  --scope)
-    msg_scope="$2"
-    ;;
-  --body)
-    msg_body="$2"
-    ;;
-  --breaking)
-    msg_breaking="$2"
-    ;;
-  --dry-run)
-    dry_run=true
-    ;;
-  --interactive)
-    prompt
-    ;;
-  --help | -h | help)
-    usage && exit 0
-    ;;
-  --*)
-    echo 1>&2 "error: unknown option \`$1'" && usage && exit 1
-    ;;
-  -*)
-    echo 1>&2 "error: unknown switch \`$1'" && usage && exit 1
-    ;;
-  esac && shift
-done
+main() {
+  while [ "${#}" -ge 1 ]; do
+    case "$1" in
+    --type)
+      msg_type="${2:-}"
+      ;;
+    --subject)
+      msg_subject="${2:-}"
+      ;;
+    --scope)
+      msg_scope="${2:-}"
+      ;;
+    --body)
+      msg_body="${2:-}"
+      ;;
+    --breaking)
+      msg_breaking="${2:-}"
+      ;;
+    --dry-run)
+      dry_run=true
+      ;;
+    --interactive)
+      interactive=true
+      ;;
+    --help | -h | help)
+      usage && exit 0
+      ;;
+    --*)
+      echo 1>&2 "error: unknown option \`$1'" && usage && exit 1
+      ;;
+    -*)
+      echo 1>&2 "error: unknown switch \`$1'" && usage && exit 1
+      ;;
+    esac && shift
+  done
 
-# check if subject provided
-[[ -z "${msg_subject:-}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
+  # prompt questions
+  ($interactive) && prompt
 
-# print out commit on dry-run
-if (${dry_run:-false}); then
-  concat && exit 0
-else
-  git commit -m "$(concat)"
-fi
+  # check if subject provided
+  [[ -z "${msg_subject:-}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
+
+  # print out commit on dry-run
+  if (${dry_run:-false}); then
+    concat && exit 0
+  else
+    git commit -m "$(concat)"
+  fi
+}
+
+main "${@}"

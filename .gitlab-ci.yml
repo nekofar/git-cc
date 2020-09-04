@@ -1,0 +1,14 @@
+image: ubuntu:latest
+
+before_script:
+  - echo "Install dependencies"
+  - apt update -y
+  - apt install -y shunit2 ruby-full
+  - gem install bashcov
+  - ln -s -f $(which shunit2) /usr/local/bin/shunit2
+
+test:
+  stage: test
+  script:
+    - echo "Perform tests and coverage"
+    - bashcov test/git-cc.sh --skip-uncovered

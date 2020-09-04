@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://gitlab.com/nekofar/git-cc/compare/v1.1.1...v1.1.2) (2020-09-04)
+
+
+### Bug Fixes
+
+* solve conflict between options and prompt ([4fd3359](https://gitlab.com/nekofar/git-cc/commit/4fd3359c4e251b2a6ac18d31bae28a9b1b745a98))
+
 ### [1.1.1](https://gitlab.com/nekofar/git-conventional-commit/compare/v1.1.0...v1.1.1) (2020-09-02)
 
 
