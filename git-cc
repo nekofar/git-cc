@@ -47,36 +47,36 @@ concat() {
 }
 
 prompt() {
-  read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
-  read -r -p 'What is the scope that this changes affect? ' msg_scope
-  read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
-  read -r -p 'Provide a longer description of the change: ' msg_body
-  read -r -p 'Any breaking changes? List those changes: ' msg_breaking
+  [[ -z "${msg_type:-}" ]] && read -r -p 'What type of changes are you committing? (feat,fix,etc...) ' msg_type
+  [[ -z "${msg_scope:-}" ]] && read -r -p 'What is the scope that this changes affect? ' msg_scope
+  [[ -z "${msg_subject:-}" ]] && read -r -p 'Write a short, imperative mood description of the change: ' msg_subject
+  [[ -z "${msg_body:-}" ]] && read -r -p 'Provide a longer description of the change: ' msg_body
+  [[ -z "${msg_breaking:-}" ]] && read -r -p 'Any breaking changes? List those changes: ' msg_breaking
 }
 
 main() {
   while [ "${#}" -ge 1 ]; do
     case "$1" in
     --type)
-      msg_type="$2"
+      msg_type="${2:-}"
       ;;
     --subject)
-      msg_subject="$2"
+      msg_subject="${2:-}"
       ;;
     --scope)
-      msg_scope="$2"
+      msg_scope="${2:-}"
       ;;
     --body)
-      msg_body="$2"
+      msg_body="${2:-}"
       ;;
     --breaking)
-      msg_breaking="$2"
+      msg_breaking="${2:-}"
       ;;
     --dry-run)
       dry_run=true
       ;;
     --interactive)
-      prompt
+      interactive=true
       ;;
     --help | -h | help)
       usage && exit 0
@@ -89,6 +89,9 @@ main() {
       ;;
     esac && shift
   done
+
+  # prompt questions
+  ($interactive) && prompt
 
   # check if subject provided
   [[ -z "${msg_subject:-}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
