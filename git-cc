@@ -91,7 +91,7 @@ main() {
   done
 
   # prompt questions
-  ($interactive) && prompt
+  (${interactive:-false}) && prompt
 
   # check if subject provided
   [[ -z "${msg_subject:-}" ]] && echo 1>&2 "fatal: subject must be provided" && usage && exit 1
